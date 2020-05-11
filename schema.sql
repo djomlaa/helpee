@@ -2,13 +2,13 @@ CREATE SCHEMA IF NOT EXISTS helpee;
 
 CREATE TABLE IF NOT EXISTS helpee.users (
     id SERIAL NOT NULL PRIMARY KEY,
-    first_name VARCHAR,
-    last_name VARCHAR,
+    first_name VARCHAR NOT NULL,
+    last_name VARCHAR NOT NULL,
     date_of_birth BIGINT,
     address VARCHAR,
     email VARCHAR NOT NULL UNIQUE,
     username VARCHAR NOT NULL UNIQUE,
-    password VARCHAR
+    password VARCHAR NOT NULL
 );
 
 

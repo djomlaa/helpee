@@ -10,21 +10,11 @@ content-type: application/json
 {
     "firstName": "Tijana",
 	"lastName": "Mladjenovic",
-    "dateOfBirth": 522547200,
-	"address": "Cerevicka 42/2",
-	"email": "tijana@example.org",
-	"username": "tijana",
-	"password": "tijana1"
+    "dateOfBirth": 52254732,
+	"address": "Ceasdasd",
+	"email": "ti111121a@example.org",
+	"username": "ti21aggja1",
+	"password": "tdasdasd1"
 }
 
 ###
-
-PUT {{host}}/1 HTTP/1.1
-content-type: application/json
-
-{
-    "name": "tea2",
-    "description": "a nice cup of different tea",
-    "price": 1.5,
-    "sku": "asd-asd-a"
-}

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 
@@ -20,13 +21,13 @@ var (
 // User model
 type User struct {
 	ID          int64
-	FirstName   string `db:"first_name" json:"firstName"`
-	LastName    string `db:"last_name" json:"lastName"`
-	DateOfBirth int64  `db:"date_of_birth" json:"dateOfBirth"`
-	Address     string  `json:"address"`
-	Email       string  `json:"email"`
-	Username    string  `json:"username"`
-	Password    string  `json:"password"`
+	FirstName   string  `db:"first_name" json:"firstName" binding:"required,alphanum,min=4,max=20"`
+	LastName    string  `db:"last_name" json:"lastName" binding:"required,alphanum,min=4,max=20"`
+	DateOfBirth int64   `db:"date_of_birth" json:"dateOfBirth" validate:"dateOfBirth"` //Date of birth is in epoch needs custom validation
+	Address     string  `json:"address" binding:"alphanum,min=4,max=50"`
+	Email       string  `json:"email" binding:"required,email"`
+	Username    string  `json:"username" binding:"required,alphanum,min=4,max=15"`
+	Password    string  `json:"password" binding:"required,min=4,max=25"` // crypto password
 }
 
 // Users list
@@ -53,12 +54,24 @@ func (s *Service) Users() ([]User, error) {
 func (s *Service) CreateUser(ctx *gin.Context, user User) error {
 
 	log.Println("Create User service")
-	log.Println("User", )
+	log.Println("User", user)
 
+
+	// Hash password
+	pass, err := hashAndSalt([]byte(user.Password))
+
+	if err != nil {
+		return fmt.Errorf("Could not generate hash from password: %v", err)		
+	}
+	user.Password = pass
+
+	//Create and execute query
 	query := `INSERT INTO users (first_name, last_name, date_of_birth, address, email, username, password) 
 	VALUES (:first,:last,:dob,:address,:email,:username,:password)`
 
-	_, err := s.db.NamedExec(query, 
+	tx := s.db.MustBegin() 
+
+	_, err = tx.NamedExec(query, 
 	map[string]interface{}{
 		"first": user.FirstName,
 		"last": user.LastName,
@@ -68,6 +81,17 @@ func (s *Service) CreateUser(ctx *gin.Context, user User) error {
 		"username":user.Username,
 		"password":user.Password,
 	})
+
+	if err != nil {
+		if rb := tx.Rollback(); rb != nil {
+			return fmt.Errorf("query failed: %v, unable to abort: %v", err, rb)
+		}
+		return err
+	}
+	
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
 	unique := isUniqueViolation(err)
 
@@ -84,4 +108,20 @@ func (s *Service) CreateUser(ctx *gin.Context, user User) error {
 	}
 
 	return nil
+}
+
+func hashAndSalt(pwd []byte) (string, error) {
+    
+    // Use GenerateFromPassword to hash & salt pwd.
+    // MinCost is just an integer constant provided by the bcrypt
+    // package along with DefaultCost & MaxCost. 
+    // The cost can be any value you want provided it isn't lower
+    // than the MinCost (4)
+    hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
+    if err != nil {
+        return "", err
+    }
+    // GenerateFromPassword returns a byte slice so we need to
+    // convert the bytes to a string and return it
+    return string(hash), nil
 }
