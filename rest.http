@@ -1,0 +1,27 @@
+@host = http://localhost:8789
+
+GET {{host}}/users HTTP/1.1
+
+###
+
+POST {{host}} HTTP/1.1
+content-type: application/json
+
+{
+    "name": "tea",
+    "description": "a nice cup of tea",
+    "price": 2.5,
+    "sku": "kjhdasd-asd-dasdasd"
+}
+
+###
+
+PUT {{host}}/1 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "tea2",
+    "description": "a nice cup of different tea",
+    "price": 1.5,
+    "sku": "asd-asd-a"
+}
