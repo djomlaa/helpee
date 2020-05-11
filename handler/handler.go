@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"net/http"
-
 	"github.com/djomlaa/helpee/service"
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +14,7 @@ func SetRouter(s *service.Service, e *gin.Engine) *gin.Engine {
 	h := &handler{s}
 
 	e.GET("/users", h.users)
+	e.POST("/users", h.createUser)
 
 	return e
 }
@@ -24,6 +23,6 @@ func respond(c *gin.Context, v interface{}, statusCode int) {
 	c.JSON(statusCode, v)	
 }
 
-func respondError(c *gin.Context, err error) {
-	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+func respondError(c *gin.Context, err error, statusCode int) {
+	c.JSON(statusCode, gin.H{"error": err.Error()})
 }

@@ -4,14 +4,17 @@ GET {{host}}/users HTTP/1.1
 
 ###
 
-POST {{host}} HTTP/1.1
+POST {{host}}/users HTTP/1.1
 content-type: application/json
 
 {
-    "name": "tea",
-    "description": "a nice cup of tea",
-    "price": 2.5,
-    "sku": "kjhdasd-asd-dasdasd"
+    "firstName": "Tijana",
+	"lastName": "Mladjenovic",
+    "dateOfBirth": 522547200,
+	"address": "Cerevicka 42/2",
+	"email": "tijana@example.org",
+	"username": "tijana",
+	"password": "tijana1"
 }
 
 ###
