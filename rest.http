@@ -1,11 +1,24 @@
 @host = http://localhost:8789
 
-GET {{host}}/users HTTP/1.1
+
+# @name login
+POST {{host}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email" : "mladen@example.org",
+	"password": "tdasdasd1"
+}
 
 ###
 
+GET {{host}}/users HTTP/1.1
+Content-Type: application/json
+###
+
 POST {{host}}/users HTTP/1.1
-content-type: application/json
+Content-Type: application/json
+# Authorization: Bearer {{login.response.body.token}}
 
 {
     "firstName": "Tijana",

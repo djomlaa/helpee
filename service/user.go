@@ -16,18 +16,20 @@ var (
 	ErrEmailTaken = errors.New("email is taken")
 	// ErrUsernameTaken used when username already exists.
 	ErrUsernameTaken = errors.New("username is taken")
+	// ErrUserNotFound used when the user not found on the db.
+	ErrUserNotFound = errors.New("user not found")
 )
 
 // User model
 type User struct {
-	ID          int64
-	FirstName   string  `db:"first_name" json:"firstName" binding:"required,alphanum,min=4,max=20"`
-	LastName    string  `db:"last_name" json:"lastName" binding:"required,alphanum,min=4,max=20"`
-	DateOfBirth int64   `db:"date_of_birth" json:"dateOfBirth" validate:"dateOfBirth"` //Date of birth is in epoch needs custom validation
-	Address     string  `json:"address" binding:"alphanum,min=4,max=50"`
-	Email       string  `json:"email" binding:"required,email"`
-	Username    string  `json:"username" binding:"required,alphanum,min=4,max=15"`
-	Password    string  `json:"password" binding:"required,min=4,max=25"` // crypto password
+	ID          int64	
+	FirstName   string  `db:"first_name" json:"firstName,omitempty" binding:"required,alphanum,min=4,max=20"`
+	LastName    string  `db:"last_name" json:"lastName,omitempty" binding:"required,alphanum,min=4,max=20"`
+	DateOfBirth int64   `db:"date_of_birth" json:"dateOfBirth,omitempty" validate:"dateOfBirth"` //Date of birth is in epoch
+	Address     string  `json:"address,omitempty" binding:"alphanum,min=4,max=50"`
+	Email       string  `json:"email,omitempty" binding:"required,email"`
+	Username    string  `json:"username,omitempty" binding:"required,alphanum,min=4,max=15"`
+	Password    string  `json:"password,omitempty" binding:"required,min=4,max=25"` // crypto password
 }
 
 // Users list
