@@ -1,1 +1,1 @@
-Application for who want help, so people can respond
+Application for those who want help, and those who want to help
