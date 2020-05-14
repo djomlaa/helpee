@@ -30,8 +30,7 @@ func (s *Service) Login(ctx *gin.Context, email string, password string) (LoginO
 
 	var l LoginOutput
 	
-	query := "SELECT id, username, password, email FROM users WHERE email = $1"
-				
+	query := "SELECT id, username, password, email FROM users WHERE email = $1"				
 
 	err := s.db.QueryRowContext(ctx, query, email).Scan(&l.AuthUser.ID, &l.AuthUser.Username, &l.AuthUser.Password, &l.AuthUser.Email)
 

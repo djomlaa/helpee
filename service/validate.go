@@ -6,3 +6,8 @@ func isUniqueViolation(err error) bool {
 	pqerr, ok := err.(*pq.Error)
 	return ok && pqerr.Code == "23505"
 }
+
+func isForeignKeyViolation(err error) bool {
+	pqerr, ok := err.(*pq.Error)
+	return ok && pqerr.Code == "23503"
+}

@@ -62,7 +62,6 @@ func (s *Service) CreateUser(ctx *gin.Context, user User) error {
 	log.Println("Create User service")
 	log.Println("User", user)
 
-
 	// Hash password
 	pass, err := hashAndSalt([]byte(user.Password))
 
