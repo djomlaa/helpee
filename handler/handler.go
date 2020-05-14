@@ -14,11 +14,13 @@ type handler struct {
 func SetRouter(s *service.Service, e *gin.Engine) *gin.Engine {
 	h := &handler{s}
 
-	e.Use(middleware.Auth())
-
 	e.POST("/login", h.login)
-	e.GET("/users", h.users)
-	e.POST("/users", h.createUser)
+
+	apiRoutes := e.Group("/api", middleware.Auth()) 
+	{
+		apiRoutes.GET("/users", h.users)
+		apiRoutes.POST("/users", h.createUser)
+	}	
 
 	return e
 }

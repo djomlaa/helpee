@@ -12,21 +12,22 @@ Content-Type: application/json
 
 ###
 
-GET {{host}}/users HTTP/1.1
+GET {{host}}/api/users HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
 ###
 
-POST {{host}}/users HTTP/1.1
+POST {{host}}/api/users HTTP/1.1
 Content-Type: application/json
-# Authorization: Bearer {{login.response.body.token}}
+Authorization: Bearer {{login.response.body.token}}
 
 {
     "firstName": "Tijana",
 	"lastName": "Mladjenovic",
     "dateOfBirth": 52254732,
 	"address": "Ceasdasd",
-	"email": "ti111121a@example.org",
-	"username": "ti21aggja1",
+	"email": "ti111121ppa@example.org",
+	"username": "ti21appggja1",
 	"password": "tdasdasd1"
 }
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -14,13 +13,16 @@ import (
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		const BEARER_SCHEMA = "Bearer "
-		authHeader := c.GetHeader("Authorization")
-		if !strings.HasPrefix(authHeader, BEARER_SCHEMA) {
+		const bearerSchema = "Bearer "
+		authHeader := c.GetHeader("Authorization")	
+		
+		if len(authHeader) < 1 {
+			log.Println("No Authorization header")
+			c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("You are not authorized for this action"))
 			return
 		}
 
-		tokenString := authHeader[len(BEARER_SCHEMA):]
+		tokenString := authHeader[len(bearerSchema):]
 
 		token, err := validateToken(tokenString)
 
