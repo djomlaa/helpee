@@ -29,7 +29,18 @@ type User struct {
 	Address     string  `json:"address,omitempty" binding:"alphanum,min=4,max=50"`
 	Email       string  `json:"email,omitempty" binding:"required,email"`
 	Username    string  `json:"username,omitempty" binding:"required,alphanum,min=4,max=15"`
-	Password    string  `json:"password,omitempty" binding:"required,min=4,max=25"` // crypto password
+	Password    string  `json:"password,omitempty" binding:"required,min=4,max=25"`
+}
+// UserUpdate model
+type UserUpdate struct {
+	ID          int64	
+	FirstName   *string   `db:"first_name" json:"firstName,omitempty"`
+	LastName    *string   `db:"last_name" json:"lastName,omitempty"`
+	DateOfBirth *int64    `db:"date_of_birth" json:"dateOfBirth,omitempty"` //Date of birth is in epoch
+	Address     *string   `json:"address,omitempty"`
+	Email       *string   `json:"email,omitempty"`
+	Username    *string   `json:"username,omitempty"`
+	Password    *string   `json:"password,omitempty"`
 }
 
 // Users list
@@ -157,6 +168,86 @@ func (s *Service) CreateUser(ctx *gin.Context, user User) error {
 
 	if err != nil {
 		return fmt.Errorf("could not insert user: %v", err)
+	}
+
+	return nil
+}
+
+// UpdateUser updates user 
+func (s *Service) UpdateUser(ctx *gin.Context, user UserUpdate, id int) error {
+
+	log.Println("Update User service")
+	log.Println("User", user)
+
+	var u UserUpdate
+
+	query := "SELECT * FROM users WHERE id = $1"
+
+	err := s.db.GetContext(ctx, &u, query, id)
+
+	if err != nil {
+		return fmt.Errorf("could not get user: %v", err)
+	}
+
+
+	if user.Password != nil {		
+		// Hash password
+		pass, err := hashAndSalt([]byte(*user.Password))
+	
+		if err != nil {
+			return fmt.Errorf("Could not generate hash from password: %v", err)		
+		}
+		user.Password = &pass
+	}
+
+	//Create and execute query
+	query = `UPDATE users u SET 
+				first_name = COALESCE(:first_name, u.first_name),
+				last_name = COALESCE(:last_name, u.last_name), 
+				date_of_birth = COALESCE(:date_of_birth, u.date_of_birth), 
+				address = COALESCE(:address, u.address), 
+				email = COALESCE(:email, u.email), 
+				username = COALESCE(:username, u.username), 
+				password = COALESCE(:password, u.password)
+  			  WHERE u.id = :id`
+
+	tx := s.db.MustBegin() 
+
+	_, err = tx.NamedExecContext(ctx, query, 
+	map[string]interface{}{
+		"id": id,
+		"first_name": user.FirstName,
+		"last_name": user.LastName,
+		"date_of_birth":user.DateOfBirth,
+		"address":user.Address,
+		"email": user.Email,
+		"username":user.Username,
+		"password":user.Password,
+	})
+
+	if err != nil {
+		if rb := tx.Rollback(); rb != nil {
+			return fmt.Errorf("query failed: %v, unable to abort: %v", err, rb)
+		}
+		return err
+	}
+	
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	unique := isUniqueViolation(err)
+
+	if unique && strings.Contains((err.Error()), "email") {
+		return ErrEmailTaken
+	}
+
+	if unique && strings.Contains((err.Error()), "username") {
+		return ErrUsernameTaken
+	}
+
+	if err != nil {
+		return fmt.Errorf("could not update user: %v", err)
 	}
 
 	return nil

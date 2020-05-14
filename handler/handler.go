@@ -21,6 +21,7 @@ func SetRouter(s *service.Service, e *gin.Engine) *gin.Engine {
 		apiRoutes.GET("/users", h.users)
 		apiRoutes.GET("/users/:id", h.user)
 		apiRoutes.DELETE("/users/:id", h.deleteUser)
+		apiRoutes.PUT("/users/:id", h.updateUser)
 		apiRoutes.POST("/users", h.createUser)
 	}	
 

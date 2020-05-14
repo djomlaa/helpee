@@ -101,3 +101,45 @@ func (h *handler) createUser(ctx *gin.Context) {
 	}
 	respond(ctx, nil, http.StatusCreated)
 }
+
+func (h *handler) updateUser(ctx *gin.Context) {
+	log.Println("Update User endpoint")
+
+	validate = validator.New()
+	validate.RegisterValidation("dateOfBirth", v.ValidateDateOfBirth)
+
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		respondError(ctx, err, http.StatusBadRequest)
+	}
+
+	var user service.UserUpdate
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		respondError(ctx, err, http.StatusInternalServerError)		
+		return
+	}
+
+	err = validate.Struct(user)
+	if err != nil {
+		respondError(ctx, err, http.StatusInternalServerError)		
+		return
+	}
+
+	err = h.UpdateUser(ctx, user, id)
+
+	if err == service.ErrEmailTaken {
+		respondError(ctx, err,http.StatusConflict)
+		return
+	}
+
+	if err == service.ErrUsernameTaken {
+		respondError(ctx, err, http.StatusConflict)
+		return
+	}
+
+	if err != nil {
+		respondError(ctx, err, http.StatusInternalServerError)
+		return
+	}
+	respond(ctx, nil, http.StatusNoContent)
+}
