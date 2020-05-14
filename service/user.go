@@ -33,14 +33,16 @@ type User struct {
 }
 
 // Users list
-func (s *Service) Users() ([]User, error) {
+func (s *Service) Users(page int, size int) ([]User, error) {
 	log.Println("Users service")
+
+	offset := page * size
 
 	uu := []User{}
 
-	query := "SELECT * FROM users ORDER BY id ASC"
+	query := "SELECT * FROM users ORDER BY id ASC OFFSET $1 LIMIT $2"
 
-	err := s.db.Select(&uu, query)
+	err := s.db.Select(&uu, query, offset, size)
 
 	for i := range uu {
 		uu[i].Password = ""

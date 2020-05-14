@@ -3,18 +3,27 @@ package handler
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/djomlaa/helpee/service"
+	v "github.com/djomlaa/helpee/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	v "github.com/djomlaa/helpee/validator"
 )
 
 var validate *validator.Validate
 
 func (h *handler) users(ctx *gin.Context) {
 	log.Println("Users endpoint")
-	uu, err := h.Users()
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "0"))
+	if err != nil {
+		respondError(ctx, err, http.StatusInternalServerError)
+	}
+	size, err := strconv.Atoi(ctx.DefaultQuery("size", "5"))
+	if err != nil {
+		respondError(ctx, err, http.StatusInternalServerError)
+	}
+	uu, err := h.Users(page, size)
 	if err != nil {
 		respondError(ctx, err, http.StatusInternalServerError)
 		return
