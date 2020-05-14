@@ -42,6 +42,10 @@ func (s *Service) Users() ([]User, error) {
 
 	err := s.db.Select(&uu, query)
 
+	for i := range uu {
+		uu[i].Password = ""
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("could not list users: %v", err)
 	}

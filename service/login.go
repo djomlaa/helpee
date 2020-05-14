@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -15,6 +16,8 @@ var (
 	// ErrUnauthenticated used when there is no autheniticated user in context
 	ErrUnauthenticated = errors.New("unauthenticated")
 )
+
+const secret = "SECRET"
 
 //LoginOutput response
 type LoginOutput struct {
@@ -46,7 +49,7 @@ func (s *Service) Login(ctx *gin.Context, email string, password string) (LoginO
 
 	l.AuthUser.Password = ""
 	
-	token, err := createToken(l.AuthUser.ID, s.secret)
+	token, err := createToken(l.AuthUser.ID)
 
 	if err != nil {
 		return l, fmt.Errorf("could not create token for user: %v", err)		
@@ -58,7 +61,7 @@ func (s *Service) Login(ctx *gin.Context, email string, password string) (LoginO
 } 
 
 
-func createToken(userid int64, secret string) (string, error) {
+func createToken(userid int64) (string, error) {
   var err error
   //Creating Access Token
   atClaims := jwt.MapClaims{}
@@ -66,7 +69,7 @@ func createToken(userid int64, secret string) (string, error) {
   atClaims["user_id"] = userid
   atClaims["expiry"] = time.Now().Add(time.Hour * 24).Unix()
   at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-  token, err := at.SignedString([]byte(secret))
+  token, err := at.SignedString([]byte(os.Getenv(secret)))
   if err != nil {
      return "", err
   }

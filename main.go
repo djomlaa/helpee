@@ -27,8 +27,9 @@ func main() {
 	var (
 		port      = env("PORT", "8789")
 		origin    = env("ORIGIN", "http://localhost:"+port)
-		secret 	  = env("SECRET", "totalymeagasecretkey")	
 	)
+	
+	env("SECRET", "totalymeagasecretkey")	
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable search_path=%s",
 		host, dbport, user, password, dbname, schema)
@@ -48,7 +49,7 @@ func main() {
 
 	server := gin.New()
 
-	s := service.New(db, origin, secret)
+	s := service.New(db, origin)
 
 	handler.SetRouter(s, server)
 
@@ -58,6 +59,9 @@ func main() {
 }
 
 func env(key, fallbackValue string) string {
+	if key == "SECRET" {
+		os.Setenv("SECRET", fallbackValue) 
+	}
 	s := os.Getenv(key)
 	if s == "" {
 		return fallbackValue

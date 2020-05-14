@@ -8,10 +8,9 @@ import (
 type Service struct {
 	db *sqlx.DB
 	origin string
-	secret string
 }
 
 // New Service implementation 
-func New(db *sqlx.DB, origin string, secret string) *Service {
-	return &Service{db: db, origin: origin, secret: secret}
+func New(db *sqlx.DB, origin string) *Service {
+	return &Service{db: db, origin: origin}
 }
