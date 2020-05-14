@@ -48,6 +48,22 @@ func (h *handler) user(ctx *gin.Context) {
 	respond(ctx, u, 200)
 }
 
+func (h *handler) deleteUser(ctx *gin.Context) {
+	log.Println("Delete User endpoint")
+
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		respondError(ctx, err, http.StatusBadRequest)
+	}
+
+	err = h.DeleteUser(ctx, id)
+	if err != nil {
+		respondError(ctx, err, http.StatusInternalServerError)
+		return
+	}
+	respond(ctx, nil, http.StatusNoContent)
+}
+
 
 func (h *handler) createUser(ctx *gin.Context) {
 	log.Println("Create User endpoint")
@@ -83,5 +99,5 @@ func (h *handler) createUser(ctx *gin.Context) {
 		respondError(ctx, err, http.StatusInternalServerError)
 		return
 	}
-	respond(ctx, nil, 200)
+	respond(ctx, nil, http.StatusCreated)
 }

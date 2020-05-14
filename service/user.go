@@ -64,19 +64,42 @@ func (s *Service) User(ctx *gin.Context, id int) (User, error) {
 
 	u := User{}
 
-	query := "SELECT * FROM users WHERE id = $1 ORDER BY id ASC"
+	query := "SELECT * FROM users WHERE id = $1"
 
 	err := s.db.GetContext(ctx, &u, query, id)
 	
 	u.Password = ""	
 
 	if err != nil {
-		return User{}, fmt.Errorf("could get user: %v", err)
+		return User{}, fmt.Errorf("could not get user: %v", err)
 	}
 
 	log.Println("User returned ", u)
 
 	return u, nil
+}
+
+// DeleteUser returns user
+func (s *Service) DeleteUser(ctx *gin.Context, id int) error {
+	log.Println("Delete User service")
+
+	u := User{}
+
+	query := "SELECT * FROM users WHERE id = $1"
+
+	err := s.db.GetContext(ctx, &u, query, id)
+
+	if err != nil {
+		return fmt.Errorf("could not get user: %v", err)
+	}
+
+	query = "DELETE FROM users WHERE id = $1"
+
+	if _, err := s.db.ExecContext(ctx, query, id); err != nil {
+		return fmt.Errorf("could not delete user: %v", err)
+	}	
+
+	return nil
 }
 
 
