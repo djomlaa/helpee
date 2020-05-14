@@ -17,18 +17,35 @@ func (h *handler) users(ctx *gin.Context) {
 	log.Println("Users endpoint")
 	page, err := strconv.Atoi(ctx.DefaultQuery("page", "0"))
 	if err != nil {
-		respondError(ctx, err, http.StatusInternalServerError)
+		respondError(ctx, err, http.StatusBadRequest)
 	}
 	size, err := strconv.Atoi(ctx.DefaultQuery("size", "5"))
 	if err != nil {
-		respondError(ctx, err, http.StatusInternalServerError)
+		respondError(ctx, err, http.StatusBadRequest)
 	}
-	uu, err := h.Users(page, size)
+	uu, err := h.Users(ctx, page, size)
 	if err != nil {
 		respondError(ctx, err, http.StatusInternalServerError)
 		return
 	}
 	respond(ctx, uu, 200)
+}
+
+
+func (h *handler) user(ctx *gin.Context) {
+	log.Println("User endpoint")
+
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		respondError(ctx, err, http.StatusBadRequest)
+	}
+
+	u, err := h.User(ctx, id)
+	if err != nil {
+		respondError(ctx, err, http.StatusInternalServerError)
+		return
+	}
+	respond(ctx, u, 200)
 }
 
 

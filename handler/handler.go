@@ -19,6 +19,7 @@ func SetRouter(s *service.Service, e *gin.Engine) *gin.Engine {
 	apiRoutes := e.Group("/api", middleware.Auth()) 
 	{
 		apiRoutes.GET("/users", h.users)
+		apiRoutes.GET("/users/:id", h.user)
 		apiRoutes.POST("/users", h.createUser)
 	}	
 

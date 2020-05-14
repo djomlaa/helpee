@@ -33,7 +33,7 @@ type User struct {
 }
 
 // Users list
-func (s *Service) Users(page int, size int) ([]User, error) {
+func (s *Service) Users(ctx *gin.Context, page int, size int) ([]User, error) {
 	log.Println("Users service")
 
 	offset := page * size
@@ -42,7 +42,7 @@ func (s *Service) Users(page int, size int) ([]User, error) {
 
 	query := "SELECT * FROM users ORDER BY id ASC OFFSET $1 LIMIT $2"
 
-	err := s.db.Select(&uu, query, offset, size)
+	err := s.db.SelectContext(ctx, &uu, query, offset, size)
 
 	for i := range uu {
 		uu[i].Password = ""
@@ -55,6 +55,28 @@ func (s *Service) Users(page int, size int) ([]User, error) {
 	log.Println("List of users", uu)
 
 	return uu, nil
+}
+
+
+// User returns user
+func (s *Service) User(ctx *gin.Context, id int) (User, error) {
+	log.Println("User service")
+
+	u := User{}
+
+	query := "SELECT * FROM users WHERE id = $1 ORDER BY id ASC"
+
+	err := s.db.GetContext(ctx, &u, query, id)
+	
+	u.Password = ""	
+
+	if err != nil {
+		return User{}, fmt.Errorf("could get user: %v", err)
+	}
+
+	log.Println("User returned ", u)
+
+	return u, nil
 }
 
 
@@ -78,7 +100,7 @@ func (s *Service) CreateUser(ctx *gin.Context, user User) error {
 
 	tx := s.db.MustBegin() 
 
-	_, err = tx.NamedExec(query, 
+	_, err = tx.NamedExecContext(ctx, query, 
 	map[string]interface{}{
 		"first": user.FirstName,
 		"last": user.LastName,

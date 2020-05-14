@@ -15,6 +15,7 @@ Content-Type: application/json
 GET {{host}}/api/users?page=2&size=5 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{login.response.body.token}}
+
 ###
 
 POST {{host}}/api/users HTTP/1.1
@@ -30,5 +31,11 @@ Authorization: Bearer {{login.response.body.token}}
 	"username": "ti21appggja1",
 	"password": "tdasdasd1"
 }
+
+###
+
+GET {{host}}/api/users/1 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
 
 ###
