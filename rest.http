@@ -40,7 +40,7 @@ Authorization: Bearer {{login.response.body.token}}
 
 ###
 
-DELETE {{host}}/api/users/38 HTTP/1.1
+DELETE {{host}}/api/users/44 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{login.response.body.token}}
 

@@ -61,7 +61,7 @@ func (h *handler) deleteUser(ctx *gin.Context) {
 		respondError(ctx, err, http.StatusInternalServerError)
 		return
 	}
-	respond(ctx, nil, http.StatusNoContent)
+	respond(ctx, gin.H{"message": "user deleted"}, http.StatusOK)
 }
 
 
@@ -99,7 +99,7 @@ func (h *handler) createUser(ctx *gin.Context) {
 		respondError(ctx, err, http.StatusInternalServerError)
 		return
 	}
-	respond(ctx, nil, http.StatusCreated)
+	respond(ctx, gin.H{"message": "user created"}, http.StatusCreated)
 }
 
 func (h *handler) updateUser(ctx *gin.Context) {
@@ -141,5 +141,5 @@ func (h *handler) updateUser(ctx *gin.Context) {
 		respondError(ctx, err, http.StatusInternalServerError)
 		return
 	}
-	respond(ctx, nil, http.StatusNoContent)
+	respond(ctx, gin.H{"message": "user updated"}, http.StatusOK)
 }
