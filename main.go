@@ -25,11 +25,11 @@ const (
 func main() {
 
 	var (
-		port      = env("PORT", "8789")
-		origin    = env("ORIGIN", "http://localhost:"+port)
+		port   = env("PORT", "8789")
+		origin = env("ORIGIN", "http://localhost:"+port)
 	)
-	
-	env("SECRET", "totalymeagasecretkey")	
+
+	env("SECRET", "totalymeagasecretkey")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable search_path=%s",
 		host, dbport, user, password, dbname, schema)
@@ -55,12 +55,12 @@ func main() {
 
 	server.Run(":" + port)
 
-	// TODO graceful shutdown 
+	// TODO graceful shutdown
 }
 
 func env(key, fallbackValue string) string {
 	if key == "SECRET" {
-		os.Setenv("SECRET", fallbackValue) 
+		os.Setenv("SECRET", fallbackValue)
 	}
 	s := os.Getenv(key)
 	if s == "" {

@@ -4,12 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	reEmail = regexp.MustCompile(`^[^\s@]+@[^\s@]+\.[^\s@]+$`)
+)
 
 var (
 	// ErrEmailTaken used when email already exists.
@@ -18,6 +22,8 @@ var (
 	ErrUsernameTaken = errors.New("username is taken")
 	// ErrUserNotFound used when the user not found on the db.
 	ErrUserNotFound = errors.New("user not found")
+	// ErrInvalidEmail used when the email is not valid.
+	ErrInvalidEmail = errors.New("invalid email")
 )
 
 // User model
@@ -120,6 +126,10 @@ func (s *Service) CreateUser(ctx *gin.Context, user User) error {
 	log.Println("Create User service")
 	log.Println("User", user)
 
+	if !reEmail.MatchString(user.Email) {
+		return ErrInvalidEmail
+	}
+
 	// Hash password
 	pass, err := hashAndSalt([]byte(user.Password))
 
@@ -178,6 +188,10 @@ func (s *Service) UpdateUser(ctx *gin.Context, user UserUpdate, id int) error {
 
 	log.Println("Update User service")
 	log.Println("User", user)
+
+	if !reEmail.MatchString(*user.Email) {
+		return ErrInvalidEmail
+	}
 
 	var u UserUpdate
 
